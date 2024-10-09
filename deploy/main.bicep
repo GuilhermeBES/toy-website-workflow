@@ -21,20 +21,20 @@ var environmentConfigurationMap = {
   nonprod: {
     appServicePlan: {
       sku: {
-        name: 'B1'
+        name: 'F1'
         capacity: 1
       }
     }
     toyManualsStorageAccount: {
       sku: {
-        name: 'Standard_GRS'
+        name: 'Standard_LRS'
       }
     }
   }
   prod: {
     appServicePlan: {
       sku: {
-        name: 'B1' 
+        name: 'S1' 
         capacity: 2
       }
     }
