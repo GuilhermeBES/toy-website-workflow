@@ -27,14 +27,14 @@ var environmentConfigurationMap = {
     }
     toyManualsStorageAccount: {
       sku: {
-        name: 'Standard_LRS'
+        name: 'Standard_GRS'
       }
     }
   }
   prod: {
     appServicePlan: {
       sku: {
-        name: 'S1' 
+        name: 'B1' 
         capacity: 2
       }
     }
