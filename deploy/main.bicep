@@ -1,5 +1,5 @@
 @description('The Azure region into which the resources should be deployed.')
-param location string = resourceGroup().location
+param location string = 'East US'
 
 @description('The type of environment. This must be nonprod or prod.')
 @allowed([
@@ -34,7 +34,7 @@ var environmentConfigurationMap = {
   prod: {
     appServicePlan: {
       sku: {
-        name: 'S1' 
+        name: 'S1'
         capacity: 2
       }
     }
