@@ -21,7 +21,7 @@ var environmentConfigurationMap = {
   nonprod: {
     appServicePlan: {
       sku: {
-        name: 'F1'
+        name: 'B1'
         capacity: 1
       }
     }
@@ -34,7 +34,7 @@ var environmentConfigurationMap = {
   prod: {
     appServicePlan: {
       sku: {
-        name: 'S1'
+        name: 'S1' 
         capacity: 2
       }
     }
