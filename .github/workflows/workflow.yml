@@ -9,12 +9,8 @@ permissions:
 env:
   AZURE_RESOURCEGROUP_NAME: ToyWebsite
   ENVIRONMENT: nonprod
-
-variables:
-  - name: resourceTemplateFile
-    value: "./infrastructure/bicep/main.bicep"
-  - name: resourceParamsFile
-    value: "./infrastructure/parameters/st.json"
+  RESOURCE_TEMPLATE_FILE: "./infrastructure/bicep/main.bicep"
+  RESOURCE_PARAMS_FILE: "./infrastructure/parameters/st.json"
 
 jobs:
   deploy:
@@ -30,5 +26,5 @@ jobs:
         with:
           deploymentName: ${{ github.run_number }}
           resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
-          template: ${{ variables.resourceTemplateFile }}
-          parameters: ${{ variables.resourceParamsFile }}
+          template: ${{ env.RESOURCE_TEMPLATE_FILE }}
+          parameters: ${{ env.RESOURCE_PARAMS_FILE }}
