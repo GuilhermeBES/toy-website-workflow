@@ -1,5 +1,5 @@
 @description('The Azure region into which the resources should be deployed.')
-param location string = 'East US'
+param location string = resourceGroup().location
 
 @description('The type of environment. This must be nonprod or prod.')
 @allowed([
@@ -16,7 +16,6 @@ var appServiceAppName = 'toy-website-${resourceNameSuffix}'
 var appServicePlanName = 'toy-website-plan'
 var toyManualsStorageAccountName = 'toyweb${resourceNameSuffix}'
 
-// Define the SKUs for each component based on the environment type.
 var environmentConfigurationMap = {
   nonprod: {
     appServicePlan: {
@@ -77,3 +76,4 @@ resource toyManualsStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01'
   kind: 'StorageV2'
   sku: environmentConfigurationMap[environmentType].toyManualsStorageAccount.sku
 }
+
