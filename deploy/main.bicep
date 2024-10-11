@@ -1,16 +1,21 @@
-@description('The Azure region into which the resources should be deployed.')
-param location string = resourceGroup().location
+@description('List of preferred regions for the deployment.')
+param preferredRegions array = [
+  'eastus'
+  'westeurope'
+  'centralus'
+]
 
-@description('The type of environment. This must be nonprod or prod.')
+@description('The environment type (prod or nonprod).')
 @allowed([
-  'nonprod'
   'prod'
+  'nonprod'
 ])
 param environmentType string
 
-@description('A unique suffix to add to resource names that need to be globally unique.')
-@maxLength(13)
+@description('A unique suffix for resource names.')
 param resourceNameSuffix string = uniqueString(resourceGroup().id)
+
+var selectedRegion = first(preferredRegions)
 
 var appServiceAppName = 'toy-website-${resourceNameSuffix}'
 var appServicePlanName = 'toy-website-plan'
@@ -45,17 +50,15 @@ var environmentConfigurationMap = {
   }
 }
 
-var toyManualsStorageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${toyManualsStorageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${toyManualsStorageAccount.listKeys().keys[0].value}'
-
 resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   name: appServicePlanName
-  location: location
+  location: selectedRegion
   sku: environmentConfigurationMap[environmentType].appServicePlan.sku
 }
 
 resource appServiceApp 'Microsoft.Web/sites@2023-12-01' = {
   name: appServiceAppName
-  location: location
+  location: selectedRegion
   properties: {
     serverFarmId: appServicePlan.id
     httpsOnly: true
@@ -63,7 +66,7 @@ resource appServiceApp 'Microsoft.Web/sites@2023-12-01' = {
       appSettings: [
         {
           name: 'ToyManualsStorageAccountConnectionString'
-          value: toyManualsStorageAccountConnectionString
+          value: 'DefaultEndpointsProtocol=https;AccountName=${toyManualsStorageAccountName};...'
         }
       ]
     }
@@ -72,8 +75,7 @@ resource appServiceApp 'Microsoft.Web/sites@2023-12-01' = {
 
 resource toyManualsStorageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: toyManualsStorageAccountName
-  location: location
+  location: selectedRegion
   kind: 'StorageV2'
   sku: environmentConfigurationMap[environmentType].toyManualsStorageAccount.sku
 }
-
