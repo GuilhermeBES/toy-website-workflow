@@ -7,27 +7,28 @@ permissions:
   contents: read
 
 env:
-  AZURE_RESOURCEGROUP_NAME: ToyWebsite
+  AZURE_RESOURCEGROUP_NAME: ToyWebsite  # Removido o segredo
   ENVIRONMENT: nonprod
+
+variables:
+  - name: resourceTemplateFile
+    value: "./infrastructure/bicep/main.bicep"
+  - name: resourceParamsFile
+    value: "./infrastructure/parameters/st.json"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: Login to Azure
-        uses: azure/login@v1
+      - uses: azure/login@v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: Deploy resources using Bicep
-        uses: azure/arm-deploy@v1
+      - uses: azure/arm-deploy@v1
         with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          deploymentName: ${{ github.run_number }}
           resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME }}
-          template: ./deploy/main.bicep
-          parametersFile: ./parameters/st.json 
-          
+          template: ${{ variables.resourceTemplateFile }}
+          parameters: ${{ variables.resourceParamsFile }}
