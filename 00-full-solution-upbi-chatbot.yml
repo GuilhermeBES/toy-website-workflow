@@ -1,0 +1,347 @@
+parameters:
+  - name: deploymentStage
+    displayName: deployment Stage
+    type: string
+    default: dev
+    values:
+      - dev
+      - stg
+      - uat
+      - prod
+
+trigger:
+  branches:
+    include:
+      - none
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  - group: upbiinbound-${{ upper(parameters.deploymentStage) }}
+  - name: resourceTemplateFileSt 
+    value: "./infrastructure/bicep/st.bicep" 
+  - name: resourceParamsFileSt 
+    value: "./infrastructure/parameters/st-upbi.params.json" 
+  - name: resourceTemplateFileCv 
+    value: "./infrastructure/bicep/cv.bicep" 
+  - name: resourceParamsFileCv 
+    value: "./infrastructure/parameters/cv-upbi.params.json" 
+  - name: resourceParamsFilesSrch 
+    value: "./infrastructure/parameters/srch-upbi.params.json" 
+  - name: resourceTemplateFilesSrch 
+    value: "./infrastructure/bicep/srch.bicep" 
+  - name: resourceParamsFilesMap
+    value: "./infrastructure/parameters/map-upbi.params.json" 
+  - name: resourceTemplateFileMap
+    value: "./infrastructure/bicep/map.bicep" 
+  - name: resourceParamsFilesSs
+    value: "./infrastructure/parameters/ss-upbi.params.json"
+  - name: resourceTemplateFilesSs 
+    value: "./infrastructure/bicep/ss.bicep" 
+  - name: resourceParamsFilesOia
+    value: "./infrastructure/parameters/oia-upbi.params.json"
+  - name: resourceTemplateFilesOia 
+    value: "./infrastructure/bicep/oia.bicep" 
+  - name: resourceTemplateFilesApp 
+    value: "./infrastructure/bicep/app.bicep" 
+  - name: resourceParamsFilesApp
+    value: "./infrastructure/parameters/app-upbi.params.json"
+  - name: resourceTemplateFilesApplan 
+    value: "./infrastructure/bicep/applan.bicep" 
+  - name: resourceParamsFilesApplan
+    value: "./infrastructure/parameters/applan-upbi.params.json"
+  - name: resourceTemplateFilesApim 
+    value: "./infrastructure/bicep/apim.bicep" 
+  - name: resourceParamsFilesApim
+    value: "./infrastructure/parameters/apim-upbi.params.json"     
+  - name: resourceTemplateFileDbw
+    value: "./infrastructure/bicep/dbw.bicep"
+  - name: resourceParamsFileDbw
+    value: "./infrastructure/parameters/dbw-upbi.params.json"
+  - name: resourceTemplateFileSynw
+    value: "./infrastructure/bicep/synw.bicep"
+  - name: resourceParamsFileSynw
+    value: "./infrastructure/parameters/synw-upbi.params.json"
+  - name: deploymentStage
+    value: ${{ lower(parameters.deploymentStage) }}
+    
+
+name: 'Branch $(Build.SourceBranchName) to DeploymentStage $(deploymentStage)'
+
+jobs:
+  - job: DeploySt 
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFileSt)
+          params:
+            DeploymentStage: $(deploymentStage)
+    
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network #"Microsoft Partner Network"
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFileSt)
+          templateParamsFile: $(resourceParamsFileSt)
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeployCv 
+    dependsOn:
+      - DeploySt
+    condition: succeeded()
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFileCv)
+          params:
+            DeploymentStage: $(deploymentStage)
+    
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network #"Microsoft Partner Network"
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFileCv)
+          templateParamsFile: $(resourceParamsFileCv)
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeploySrch 
+    dependsOn:
+      - DeployCv
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFilesSrch)
+          params:
+            DeploymentStage: $(deploymentStage)
+    
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network #"Microsoft Partner Network"
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFilesSrch)
+          templateParamsFile: $(resourceParamsFilesSrch)
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeployMap 
+    dependsOn:
+      - DeployCv
+      - DeploySrch
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFilesMap)
+          params:
+            DeploymentStage: $(deploymentStage)
+    
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network #"Microsoft Partner Network"
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFileMap)
+          templateParamsFile: $(resourceParamsFilesMap)
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeploySs 
+    dependsOn:
+      - DeployMap
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFilesSs)
+          params:
+            DeploymentStage: $(deploymentStage)
+    
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network #"Microsoft Partner Network"
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFilesSs)
+          templateParamsFile: $(resourceParamsFilesSs)
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeployOIA
+    dependsOn:
+      - DeploySs
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFilesOia) 
+          params:
+            DeploymentStage: $(deploymentStage)
+  
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFilesOia) 
+          templateParamsFile: $(resourceParamsFilesOia) 
+          params:
+            DeploymentStage: $(deploymentStage)
+
+
+  - job: DeployApplan
+    dependsOn:
+      - DeployOIA
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFilesApplan) 
+          params:
+            DeploymentStage: $(deploymentStage)
+  
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFilesApplan) 
+          templateParamsFile: $(resourceParamsFilesApplan) 
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeployApp
+    dependsOn:
+      - DeployApplan
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFilesApp) 
+          params:
+            DeploymentStage: $(deploymentStage)
+  
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFilesApp) 
+          templateParamsFile: $(resourceParamsFilesApp) 
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeployApim
+    dependsOn:
+      - DeployApp
+    steps:
+      - checkout: none   
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFilesApim) 
+          params:
+            DeploymentStage: $(deploymentStage)
+  
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFilesApim) 
+          templateParamsFile: $(resourceParamsFilesApim) 
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeployDbw
+    dependsOn:
+      - DeployApim
+    steps:
+      - checkout: none
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFileDbw)
+          params:
+            DeploymentStage: $(deploymentStage)
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFileDbw)
+          templateParamsFile: $(resourceParamsFileDbw)
+          params:
+            DeploymentStage: $(deploymentStage)
+
+  - job: DeploySynw
+    dependsOn:
+      - DeployDbw
+    steps:
+      - checkout: none
+      - template: modules/gitcheckout.yml
+        parameters:
+          folders: "infrastructure yaml"
+      - template: modules/settingsfilesupdate.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          settingsFiles: 
+            $(resourceParamsFileSynw)
+          params:
+            DeploymentStage: $(deploymentStage)
+      - template: modules/resourcegroupdeployment.yml
+        parameters:
+          subscriptionName: sc-upbi-microsoft-partner-network
+          resourceGroupName: rg-eu2-latam-poc-mlops-$(deploymentStage)-001
+          templateFile: $(resourceTemplateFileSynw)
+          templateParamsFile: $(resourceParamsFileSynw)
+          params:
+            DeploymentStage: $(deploymentStage)
+
+ 

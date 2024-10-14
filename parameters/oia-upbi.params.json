@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceName": {
+      "value": "oia-upbi-chatbot-eastus2-{DeploymentStage}-001"
+    },
+    "sku": {
+      "value": "S0"
+    },
+    "customSubDomainName": {
+      "value": "openai-service-dev-001"
+    },
+    "kind": {
+        "value": "OpenAI"
+    },
+    "location": {
+      "value": "eastus2"  
+    }
+  
+  }
+}
+
+  

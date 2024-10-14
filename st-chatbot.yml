@@ -1,0 +1,64 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploymentStage:
+        description: 'Select the Deployment Stage'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - stg
+          - uat
+          - prod
+
+jobs:
+  deploy:
+    runs-on: windows-latest
+    
+    strategy:
+      matrix:
+        stage: [dev, stg, uat, prod]
+
+    environment: ${{ matrix.stage }}
+
+    env:
+      RESOURCE_GROUP_PREFIX: "ToyWebsite"
+      DEPLOYMENT_STAGE: ${{ matrix.stage }}
+      RESOURCE_TEMPLATE_FILE: "./infrastructure/bicep/st.bicep"
+      RESOURCE_PARAMS_FILE: "./infrastructure/parameters/st-upbi-${{ matrix.stage }}.params.json"
+      AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Git Checkout specific folders
+        run: |
+          git checkout -- ./infrastructure
+          git checkout -- ./yaml
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Validate ARM/Bicep templates
+        run: |
+          az deployment group validate \
+            --subscription ${{ env.AZURE_SUBSCRIPTION }} \
+            --resource-group ${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001 \
+            --template-file ${{ env.RESOURCE_TEMPLATE_FILE }} \
+            --parameters ${{ env.RESOURCE_PARAMS_FILE }} \
+            --parameters DeploymentStage=${{ env.DEPLOYMENT_STAGE }}
+
+      - name: Deploy Resource Group
+        run: |
+          az deployment group create \
+            --subscription ${{ env.AZURE_SUBSCRIPTION }} \
+            --resource-group ${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001 \
+            --template-file ${{ env.RESOURCE_TEMPLATE_FILE }} \
+            --parameters ${{ env.RESOURCE_PARAMS_FILE }} \
+            --parameters DeploymentStage=${{ env.DEPLOYMENT_STAGE }}

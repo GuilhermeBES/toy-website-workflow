@@ -1,0 +1,60 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.25.53.49325",
+      "templateHash": "695164742048978243"
+    }
+  },
+  "parameters": {
+    "accountName": {
+      "type": "string",
+      "value": "map-upbi-chatbot-eastus-{DeploymentStage}-001",
+      "metadata": {
+        "description": "The name for your Azure Maps account. This value must be globally unique."
+      }
+    },
+    "location": {
+      "type": "string",
+      "value": "eastus",
+      "metadata": {
+        "description": "Specifies the location for all the resources."
+      }
+    },
+    "pricingTier": {
+      "type": "string",
+      "value": "G2",
+      "allowedValues": [
+        "G2"
+      ],
+      "metadata": {
+        "description": "The pricing tier SKU for the account."
+      }
+    },
+    "kind": {
+      "type": "string",
+      "value": "Gen2",
+      "allowedValues": [
+        "Gen2"
+      ],
+      "metadata": {
+        "description": "The kind of Azure Maps account."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Maps/accounts",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('accountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('pricingTier')]"
+      },
+      "kind": "[parameters('kind')]",
+      "properties": {}
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceName": {
+            "value": "cv-upbi-chatbot-eastus2-{DeploymentStage}-002"
+        },
+        "skuName": {
+            "value": "F0"
+        }
+        ,
+        "kind": {
+            "value": "ComputerVision"
+        },
+        "location": {
+          "value": "eastus2"  
+        }
+    }
+}
+ 

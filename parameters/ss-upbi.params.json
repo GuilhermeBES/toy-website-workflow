@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceName": {
+      "value": "ss-upbi-chatbot-eastus2-{DeploymentStage}-001"
+    },
+    "sku": {
+      "value": "F0"
+    },
+    "customSubDomainName": {
+      "value": ""
+    },
+    "kind": {
+        "value": "SpeechServices"
+    },
+    "location": {
+      "value": "eastus2"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "groups": [
+    {
+      "name": "Dev",
+      "members": ["pedro.carvalho@upbi.com.br"]
+    },
+    {
+      "name": "tester",
+      "members": ["pedro.carvalho@upbi.com.br"]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+parameters:
+  folders: '*'
+
+steps:
+- bash: |
+      set -ex
+      export ORIGIN=$(Build.Repository.Uri)
+      export REF=$(Build.SourceVersion)
+      export FOLDERS='${{ parameters.folders }}'
+      git version
+      git lfs version
+      git init
+      git sparse-checkout init --cone
+      git sparse-checkout add $FOLDERS
+      git remote add origin $ORIGIN
+      git config core.sparsecheckout true
+      git config gc.auto 0
+      git config advice.detachedHead false
+      git config http.version HTTP/1.1
+      git lfs install --local
+      git config uploadpack.allowReachableSHA1InWant true
+      git config http.extraheader "AUTHORIZATION: bearer $(System.AccessToken)"
+      git fetch --force --no-tags --progress --depth 1 origin $REF
+      git checkout $REF --progress --force
+      git status
+  displayName: Git Checkout
+  
+- task: CmdLine@2
+  displayName: 'List files'
+  inputs:
+    script: |
+      echo "Structure of work folder of this pipeline:"
+      tree $(Agent.WorkFolder)\1 /f
+      echo "Build.ArtifactStagingDirectory:" 
+      echo "$(Build.ArtifactStagingDirectory)"
+      echo "Build.BinariesDirectory:" 
+      echo "$(Build.BinariesDirectory)"
+      echo "Build.SourcesDirectory:"
+      echo "$(Build.SourcesDirectory)"

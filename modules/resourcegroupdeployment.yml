@@ -1,0 +1,28 @@
+parameters:
+  - name: subscriptionName
+    type: string    
+  - name: resourceGroupName
+    type: string
+  - name: templateFile
+    type: string    
+  - name: templateParamsFile
+    type: string
+  - name: params
+    type: object
+
+steps:
+  - script: echo ${{ parameters.templateParamsFile }}
+  - task: AzurePowerShell@5
+    displayName: "Update configuration and deploy subscription change"
+    inputs:
+      azureSubscription: ${{ parameters.subscriptionName }}
+      ScriptType: "InlineScript"
+      azurePowerShellVersion: "LatestVersion"
+      failOnStderr: true
+      Inline: |
+        . "./infrastructure/common/fileutils.ps1"
+        $subscriptionName = '${{ parameters.subscriptionName }}'
+        $resourceGroupName = '${{ parameters.resourceGroupName }}'
+        $templateFile = '$(Build.SourcesDirectory)/${{ parameters.templateFile }}'
+        $templateParamsFile = '$(Build.SourcesDirectory)/${{ parameters.templateParamsFile }}'
+        New-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -TemplateFile $templateFile -TemplateParameterFile $templateParamsFile -Verbose -ErrorAction Stop        

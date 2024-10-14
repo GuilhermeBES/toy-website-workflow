@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workspace": {
+      "value": "synw-upbi-chatbot-eastus2-{DeploymentStage}-001"
+    },
+    "managedResourceGroupName": {
+      "value": "rg-eu2-latam-poc-mlops-synapse-managed"
+    },
+    "defaultDataLakeStorageAccountUrl": {
+      "value": "https://yourdatalakeaccount.dfs.core.windows.net"
+    },
+    "defaultDataLakeStorageFilesystem": {
+      "value": "your-filesystem"
+    },
+    "identityType": {
+      "value": "SystemAssigned"
+    }
+  }
+}
+
+
+
+  

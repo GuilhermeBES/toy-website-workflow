@@ -1,0 +1,35 @@
+parameters:
+  - name: subscriptionName
+    type: string    
+  - name: settingsFiles
+    type: object
+  - name: params
+    type: object
+
+steps:
+  - task: PowerShell@2
+    inputs:
+      targetType: inline
+      script: |
+        $jsonfiles = '${{ convertToJson(parameters.settingsFiles) }}'
+        $jsonparams = '${{ convertToJson(parameters.params) }}'
+        
+  - task: AzurePowerShell@5
+    displayName: "Update configuration files"
+    inputs:
+      azureSubscription: ${{ parameters.subscriptionName }}
+      ScriptType: "InlineScript"
+      azurePowerShellVersion: "LatestVersion"
+      failOnStderr: true
+      Inline: |
+        . "./infrastructure/common/fileutils.ps1"
+        $params = '${{ convertToJson(parameters.params) }}'
+        $files = '${{ convertToJson(parameters.settingsFiles) }}'
+        Write-Host "Serialized fnParams: '$params'"
+        Write-Host "Serialized files: $files"
+        $filesArray = $files.Replace('"','').Split(' ')
+        for ($i = 0; $i -lt $filesArray.length; $i++) {
+          Write-Host "Updating: $($filesArray[$i])"
+          UpdateParams -filepath $($filesArray[$i]) -values $params
+          UpdateSharedSubscriptionId -filepath $($filesArray[$i]) -deploymentStage ${{ parameters.params.DeploymentStage }} 
+        }

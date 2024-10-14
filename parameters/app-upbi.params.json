@@ -1,0 +1,12 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "resourceName": {
+      "value": "app-upbi-chatbot-eastus2-{DeploymentStage}-001"
+    },
+    "existingAppServicePlan": {
+      "value": "/subscriptions/5c052e51-795d-4106-84cb-5dec482214e0/resourceGroups/rg-eu2-latam-poc-mlops-dev-001/providers/Microsoft.Web/serverfarms/applan-upbi-chatbot-eastus2-{DeploymentStage}-001"
+    }
+  }
+}
