@@ -16,6 +16,7 @@ on:
 
 permissions:
   id-token: write
+  contents: read  # Adicione permissões para acessar o repositório
 
 jobs:
   deploy:
@@ -51,16 +52,16 @@ jobs:
         run: |
           az deployment group validate \
             --subscription ${{ env.AZURE_SUBSCRIPTION }} \
-            --resource-group ${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001 \
-            --template-file ${{ env.RESOURCE_TEMPLATE_FILE }} \
-            --parameters ${{ env.RESOURCE_PARAMS_FILE }} \
-            --parameters DeploymentStage=${{ env.DEPLOYMENT_STAGE }}
+            --resource-group "${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001" \
+            --template-file "${{ env.RESOURCE_TEMPLATE_FILE }}" \
+            --parameters "${{ env.RESOURCE_PARAMS_FILE }}" \
+            --parameters DeploymentStage="${{ env.DEPLOYMENT_STAGE }}"
 
       - name: Deploy Resource Group
         run: |
           az deployment group create \
             --subscription ${{ env.AZURE_SUBSCRIPTION }} \
-            --resource-group ${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001 \
-            --template-file ${{ env.RESOURCE_TEMPLATE_FILE }} \
-            --parameters ${{ env.RESOURCE_PARAMS_FILE }} \
-            --parameters DeploymentStage=${{ env.DEPLOYMENT_STAGE }}
+            --resource-group "${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001" \
+            --template-file "${{ env.RESOURCE_TEMPLATE_FILE }}" \
+            --parameters "${{ env.RESOURCE_PARAMS_FILE }}" \
+            --parameters DeploymentStage="${{ env.DEPLOYMENT_STAGE }}"
