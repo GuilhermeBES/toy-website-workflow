@@ -36,7 +36,6 @@ jobs:
           Get-ChildItem ./infrastructure
           Get-ChildItem ./infrastructure/parameters
 
-
       - name: Login to Azure
         uses: azure/login@v1
         with:
