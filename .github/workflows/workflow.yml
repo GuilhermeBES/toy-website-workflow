@@ -7,7 +7,7 @@ permissions:
   contents: read
 
 env:
-  AZURE_RESOURCEGROUP_NAME: ToyWebsite
+  AZURE_RESOURCEGROUP_NAME: rg-eu2-latam-poc-mlops-dev-001
   ENVIRONMENT: nonprod
   RESOURCE_TEMPLATE_FILE: "./deploy/st.bicep"
   RESOURCE_PARAMS_FILE: "./parameters/st-upbi.params.json"

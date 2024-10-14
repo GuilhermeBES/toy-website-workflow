@@ -25,7 +25,7 @@ jobs:
     environment: ${{ matrix.stage }}
 
     env:
-      RESOURCE_GROUP_PREFIX: "ToyWebsite"
+      RESOURCE_GROUP_PREFIX: "rg-eu2-latam-poc-mlops-dev-001e"
       DEPLOYMENT_STAGE: ${{ matrix.stage }}
       RESOURCE_TEMPLATE_FILE: "./infrastructure/bicep/st.bicep"
       RESOURCE_PARAMS_FILE: "./infrastructure/parameters/st-upbi-${{ matrix.stage }}.params.json"
