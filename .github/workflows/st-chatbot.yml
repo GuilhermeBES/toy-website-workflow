@@ -15,8 +15,7 @@ on:
           - prod
 
 permissions:
-  id-token: write
-  contents: read  # Adicione permissões para acessar o repositório
+  id-token: none  # Removendo permissões de OIDC
 
 jobs:
   deploy:
@@ -43,26 +42,26 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v1
         with:
-            client-id: ${{ secrets.AZURE_CLIENT_ID }}
-            client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-            tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-            auth-type: SERVICE_PRINCIPAL
-          
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}  # Adicione o client-secret
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          auth-type: SERVICE_PRINCIPAL
+
       - name: Validate ARM/Bicep templates
         run: |
           az deployment group validate \
             --subscription ${{ env.AZURE_SUBSCRIPTION }} \
-            --resource-group "${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001" \
-            --template-file "${{ env.RESOURCE_TEMPLATE_FILE }}" \
-            --parameters "${{ env.RESOURCE_PARAMS_FILE }}" \
-            --parameters DeploymentStage="${{ env.DEPLOYMENT_STAGE }}"
+            --resource-group ${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001 \
+            --template-file ${{ env.RESOURCE_TEMPLATE_FILE }} \
+            --parameters ${{ env.RESOURCE_PARAMS_FILE }} \
+            --parameters DeploymentStage=${{ env.DEPLOYMENT_STAGE }}
 
       - name: Deploy Resource Group
         run: |
           az deployment group create \
             --subscription ${{ env.AZURE_SUBSCRIPTION }} \
-            --resource-group "${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001" \
-            --template-file "${{ env.RESOURCE_TEMPLATE_FILE }}" \
-            --parameters "${{ env.RESOURCE_PARAMS_FILE }}" \
-            --parameters DeploymentStage="${{ env.DEPLOYMENT_STAGE }}"
+            --resource-group ${{ env.RESOURCE_GROUP_PREFIX }}-${{ env.DEPLOYMENT_STAGE }}-001 \
+            --template-file ${{ env.RESOURCE_TEMPLATE_FILE }} \
+            --parameters ${{ env.RESOURCE_PARAMS_FILE }} \
+            --parameters DeploymentStage=${{ env.DEPLOYMENT_STAGE }}
