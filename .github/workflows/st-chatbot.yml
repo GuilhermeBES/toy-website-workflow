@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy St
 
 on:
   workflow_dispatch:
@@ -17,28 +17,24 @@ on:
 jobs:
   deploy:
     runs-on: windows-latest
-    
-    strategy:
-      matrix:
-        stage: [dev, stg, uat, prod]
 
-    environment: ${{ matrix.stage }}
+    environment: ${{ github.event.inputs.deploymentStage }}
 
     env:
-      RESOURCE_GROUP_PREFIX: "rg-eu2-latam-poc-mlops-dev-001e"
-      DEPLOYMENT_STAGE: ${{ matrix.stage }}
+      RESOURCE_GROUP_PREFIX: "rg-eu2-latam-poc-mlops"
+      DEPLOYMENT_STAGE: ${{ github.event.inputs.deploymentStage }}
       RESOURCE_TEMPLATE_FILE: "./infrastructure/bicep/st.bicep"
-      RESOURCE_PARAMS_FILE: "./infrastructure/parameters/st-upbi-${{ matrix.stage }}.params.json"
+      RESOURCE_PARAMS_FILE: "./infrastructure/parameters/st-upbi-${{ github.event.inputs.deploymentStage }}.params.json"
       AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Git Checkout specific folders
+      - name: Verify folder structure
         run: |
-          git checkout -- ./infrastructure
-          git checkout -- ./yaml
+          ls -al ./infrastructure
+          ls -al ./infrastructure/parameters
 
       - name: Login to Azure
         uses: azure/login@v1
@@ -62,3 +58,4 @@ jobs:
             --template-file ${{ env.RESOURCE_TEMPLATE_FILE }} \
             --parameters ${{ env.RESOURCE_PARAMS_FILE }} \
             --parameters DeploymentStage=${{ env.DEPLOYMENT_STAGE }}
+
