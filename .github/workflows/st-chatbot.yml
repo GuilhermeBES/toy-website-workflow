@@ -36,13 +36,14 @@ jobs:
           Get-ChildItem ./infrastructure
           Get-ChildItem ./infrastructure/parameters
 
-      - name: Login to Azure using OIDC
+      - name: Login to Azure using Managed Identity
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          identity: 'system' 
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          auth-type: 'oidc'  # Utilize OIDC para autenticação
+          auth-type: 'IDENTITY' 
+ 
 
       - name: Validate ARM/Bicep templates
         run: |
