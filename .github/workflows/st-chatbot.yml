@@ -14,9 +14,6 @@ on:
           - uat
           - prod
 
-permissions:
-  id-token: none  # Removendo permissões de OIDC
-
 jobs:
   deploy:
     runs-on: windows-latest
